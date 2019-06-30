@@ -1,0 +1,7 @@
+paypal:
+    mode: sandbox
+    clientId: xxx
+    secret: xxx
+    redirectDomain: http://localhost:8080
+    cancelUrl: /paypal/payment/cancel
+    returnUrl: /paypal/payment/return

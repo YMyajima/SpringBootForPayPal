@@ -1,0 +1,90 @@
+<configuration scan="true" scanPeriod="15 seconds" debug="true">
+
+    <property scope="context" name="pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t][%-5p][%C:%L] %m%n"/>
+    <property scope="context" name="rollingFilePattern" value=".%d{yyyy-MM-dd}.%i"/>
+
+    <property scope="context" name="logFile" value="/usr/local/tomcat/logs/sample"/>
+    <property scope="context" name="errorLogFile" value="/usr/local/tomcat/logs/sample-error"/>
+
+    <!--dev,alpha環境用設定 -->
+    <springProfile name="dev">
+        <property scope="context" name="logLevel" value="DEBUG"/>
+    </springProfile>
+
+    <!--release環境用設定 -->
+    <springProfile name="product">
+        <property scope="context" name="logLevel" value="info"/>
+    </springProfile>
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logFile}.log</file>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>${logLevel}</level>
+        </filter>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>
+                ${logFile}${rollingFilePattern}.log
+            </fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>60</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>${pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="errorFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${errorLogFile}.log</file>
+
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <!-- errorレベル以上の場合にログを許可する -->
+            <level>ERROR</level>
+        </filter>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>
+                ${errorLogFile}${rollingFilePattern}.log
+            </fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>60</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>${pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.zaxxer.hikari.pool.HikariPool" level="off"/>
+
+    <logger name="org.apache.http.impl" level="OFF"/>
+
+    <logger name="org.apache.juli.logging" level="OFF"/>
+
+    <logger name="com.zaxxer.hikari.pool.PoolBase" level="OFF"/>
+
+    <logger name="org.apache.catalina.session.ManagerBase" level="OFF"/>
+    <!-- DBのsession開始と終了のログをOFF -->
+
+    <logger name="org.apache.tomcat.util.threads.LimitLatch" level="OFF"/>
+    <!-- Counting down~というログをOFF -->
+    
+    <logger name="com.sample.paypal" level="${logLevel}" additivity="false">
+        <appender-ref ref="console"/>
+        <appender-ref ref="file"/>
+        <appender-ref ref="errorFile"/>
+    </logger>
+
+    <root level="${logLevel}">
+        <appender-ref ref="console"/>
+        <appender-ref ref="file"/>
+    </root>
+
+</configuration>

@@ -1,0 +1,19 @@
+spring:
+    profiles:
+        active: local
+        include:
+            - encrypt
+            - paypal
+    datasource:
+        driverClassName: com.mysql.jdbc.Driver
+        username: "xxxxxxxxxxxxxxxxxx"  # encrypted username by jasypt.
+        password: "yyyyyyyyyyyyyyyyyy"  # encrypted password by jasypt.
+        maxPool: 10  # 最大コネクション数。
+        minIdle: 0  # アイドル状態の最小コネクション数。
+        poolName: "HikariPool"
+        maxLifeTime: 20  # connectionを破棄するまでの時間
+        idleTimeout: 10  # プール内にあるアイドル状態のconnectionを破棄するまでの時間
+        connectionTimeout: 10  # 秒で指定する
+        masterJdbcUrl: "jdbc:mysql://127.0.0.1:3306/billing?zeroDateTimeBehavior=convertToNull&allowMultiQueries=true"
+        slaveJdbcUrl: "jdbc:mysql://127.0.0.1:3306/billing?zeroDateTimeBehavior=convertToNull&allowMultiQueries=true"
+        ConnectionTestQuery: "SELECT 1"

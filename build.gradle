@@ -1,0 +1,114 @@
+buildscript {
+    ext {
+        springBootVersion = '2.1.6.RELEASE'
+        lombokVersion = '1.18.8'
+    }
+    repositories {
+        mavenCentral()
+        maven {
+            url = "http://nexus-pf.nhn-japan.com/repository/billing-public/"
+        }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'war'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+
+group = 'com.sample'
+version = '1.0.0'
+sourceCompatibility = 11
+targetCompatibility = 11
+
+war {
+    doFirst {
+        bootRun.systemProperty 'spring.profiles.active', getProperty("active.profile")
+    }
+    enabled = true
+    archiveBaseName = "paypal-sample"
+    from 'src/main/java' // adds a file-set to the root of the archive
+    webInf { // adds a file-set to the WEB-INF dir.
+        from 'src/main/java'
+    }
+}
+
+bootRun {
+    doFirst {
+        bootRun.systemProperty 'spring.profiles.active', getProperty("active.profile")
+    }
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs = [
+                    "src/main/resources",
+                    "src/main/resources-" + getProperty("active.profile"),
+            ]
+        }
+    }
+}
+
+configurations {
+    developmentOnly
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation (
+            'org.springframework.boot:spring-boot-starter-web:' + springBootVersion,
+            'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.0.1',
+            // https://mvnrepository.com/artifact/com.zaxxer/HikariCP
+            'com.zaxxer:HikariCP:3.2.0',
+            // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+            'org.apache.commons:commons-lang3:3.9',
+            // https://mvnrepository.com/artifact/org.jasypt/jasypt
+            'org.jasypt:jasypt:1.9.2',
+            // https://mvnrepository.com/artifact/com.paypal.sdk/rest-api-sdk
+            'com.paypal.sdk:rest-api-sdk:1.14.0',
+            // https://mvnrepository.com/artifact/com.paypal.sdk/paypal-core
+            'com.paypal.sdk:paypal-core:1.7.2',
+
+    )
+    compileOnly (
+            'org.projectlombok:lombok:' + lombokVersion,
+    )
+    developmentOnly (
+            'org.springframework.boot:spring-boot-devtools:' + springBootVersion,
+    )
+    runtimeOnly (
+            'mysql:mysql-connector-java:8.0.16',
+    )
+    annotationProcessor (
+            'org.projectlombok:lombok:' + lombokVersion,
+    )
+    providedRuntime (
+            'org.springframework.boot:spring-boot-starter-tomcat:' + springBootVersion,
+    )
+    testImplementation (
+            'org.springframework.boot:spring-boot-starter-test:' + springBootVersion,
+            // https://mvnrepository.com/artifact/org.codehaus.groovy/groovy-all
+            'org.codehaus.groovy:groovy-all:2.5.7',
+            // https://mvnrepository.com/artifact/org.spockframework/spock-core
+            'org.spockframework:spock-core:1.3-groovy-2.5',
+            // https://mvnrepository.com/artifact/org.spockframework/spock-spring
+            'org.spockframework:spock-spring:1.3-groovy-2.5',
+    )
+}
