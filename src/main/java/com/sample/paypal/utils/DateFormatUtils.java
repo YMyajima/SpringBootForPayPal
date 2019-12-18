@@ -10,4 +10,10 @@ public class DateFormatUtils {
         String strDateTime = dateTime.format(dateTimeFormatter);
         return strDateTime;
     }
+    
+    public static String toStrVersion2(ZonedDateTime dateTime, final String format) {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(format);
+        String strDateTime = dateTime.format(dateTimeFormatter);
+        return strDateTime;
+    }
 }
